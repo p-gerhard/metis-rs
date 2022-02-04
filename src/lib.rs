@@ -545,9 +545,17 @@ impl<'a> Mesh<'a> {
     /// While nothing should be modified by the [`Mesh`] structure, METIS
     /// doesn't specify any `const` modifier, so everything must be mutable on
     /// Rust's side.
-    pub fn new(nn: Idx, nparts: Idx, eptr: &'a mut [Idx], eind: &'a mut [Idx]) -> Mesh<'a> {
+    pub fn new(
+        nn: Idx,
+        nparts: Idx,
+        ncommon: Idx,
+        eptr: &'a mut [Idx],
+        eind: &'a mut [Idx],
+    ) -> Mesh<'a> {
         assert!(0 < nn, "nn must be strictly greater than zero");
+        assert!(0 < ncommon, "ncommon must be strictly greater than zero");
         assert!(0 < nparts, "nn must be strictly greater than zero");
+
         let _ = Idx::try_from(eptr.len()).expect("eptr array larger than Idx::MAX");
         assert_ne!(eptr.len(), 0);
         let eind_len = Idx::try_from(eind.len()).expect("eind array larger than Idx::MAX");
@@ -556,7 +564,7 @@ impl<'a> Mesh<'a> {
         Mesh {
             nn,
             nparts,
-            ncommon: 1,
+            ncommon,
             eptr,
             eind,
             vwgt: None,
